@@ -68,21 +68,23 @@ def get_data_for_training(symbol, start_date, end_date):
     """Read stock data (adjusted close) for given symbols from CSV files."""
     df_final = pd.DataFrame(index=pd.date_range(start_date, end_date))
     df_temp = get_stock_data_by_symbol(symbol)
-    if df_temp.empty:
-        raise 'Symbol invalid or with empty stock data!'
-    df_temp = df_temp[['close']]
-    df_temp.index = pd.to_datetime(df_temp.index)
-    df_final = df_final.join(df_temp)
-    df_final = df_final.ffill().bfill()
-    return df_final
+    if not df_temp.empty:
+        df_temp = df_temp[['close']]
+        df_temp.index = pd.to_datetime(df_temp.index)
+        df_final = df_final.join(df_temp)
+        df_final = df_final.ffill().bfill()
+        return df_final
+    return False
 
 
 st.title("Capstone Project Data Scientist: Investment and Trading")
-st.info("Student: Paulo Mota")
+st.markdown("Autor: Paulo Mota [![Linkedin](https://i.stack.imgur.com/gVE0j.png) LinkedIn](https://www.linkedin.com/in/paulo-mota-955218a2/)")
+st.markdown("")
+st.info("This software utilizes stock symbols from the USA and retrieves financial data from Yahoo Finance. More info: https://financeapi.net/")
 tab_compare, tab_predict = st.tabs(["Compare Stocks", "Predictor"])
 
 with tab_compare:
-    st.write("""Closing price and daily returns comparator.""")
+    st.header("Closing price and daily returns comparator")
     today = datetime.date.today()
     tomorrow = today + datetime.timedelta(days=1)
     yesterday = today - datetime.timedelta(days=1)
@@ -96,9 +98,10 @@ with tab_compare:
         st.error('Error: End date must be equal or older than yesterday.')
 
     # get symbols from user
+
     symbol_list = st.text_input("Enter Symbols Separated by comma (,)", value='GOOG,TSLA,MSFT',
                                 key='symbols').upper().split(',')
-
+    st.info('The chart will not display invalid symbols or symbols that are not listed in the USA market.', icon="⚠️")
     if st.button('Run'):
         valid_input = True
         if not start_date < end_date:
@@ -138,8 +141,11 @@ with tab_compare:
                 st.error("Please fill all fields!")
 
 with tab_predict:
+    st.header("Closing price predictor with Prophet model")
+    st.write("More info about Prophet: https://facebook.github.io/prophet/")
+    st.write("Why is good predict stock value?")
     st.write(
-        """Closing price predictor with Prophet Model from Facebook, more info https://facebook.github.io/prophet/ """)
+        """Stock value prediction is to forecast the future price or value of a stock, which is influenced by various factors such as company performance, market conditions, and global economic trends. By accurately predicting the future value of a stock, investors can make informed decisions about whether to buy, sell, or hold a particular stock, potentially resulting in significant financial gains.""")
     stock_symbol = st.text_input('Stock Symbol', 'TSLA')
 
     if st.button('Predict Stock'):
@@ -150,36 +156,40 @@ with tab_predict:
             predict_days = 365
             future_date = end_date + datetime.timedelta(days=365)
             df_train = get_data_for_training(stock_symbol, start_date, end_date)
-            # Preparing training data
-            df_train = df_train[['close']]
-            df_train = df_train.reset_index()
-            df_train = df_train.rename(columns={'index': 'ds', 'close': 'y'})
-            df_train.tail()
+            print(df_train)
+            if not df_train is False:
+                # Preparing training data
+                df_train = df_train[['close']]
+                df_train = df_train.reset_index()
+                df_train = df_train.rename(columns={'index': 'ds', 'close': 'y'})
+                df_train.tail()
 
-            # Create Prophet model
-            model = Prophet()
+                # Create Prophet model
+                model = Prophet()
 
-            # Train model
-            model.fit(df_train)
+                # Train model
+                model.fit(df_train)
 
-            # Make predictions on test data
-            future = model.make_future_dataframe(periods=predict_days, freq='D')
-            predictions = model.predict(future)
-            predictions = predictions.rename(columns={'ds': 'date'})
-            predictions = predictions.rename(columns={'yhat': 'prediction'})
-            predictions = predictions[['date', 'prediction']]
-            predictions = predictions.set_index('date')
+                # Make predictions on test data
+                future = model.make_future_dataframe(periods=predict_days, freq='D')
+                predictions = model.predict(future)
+                predictions = predictions.rename(columns={'ds': 'date'})
+                predictions = predictions.rename(columns={'yhat': 'prediction'})
+                predictions = predictions[['date', 'prediction']]
+                predictions = predictions.set_index('date')
 
-            df_train = df_train.rename(columns={'ds': 'date'})
-            df_train = df_train.rename(columns={'y': 'close_value'})
-            df_train = df_train[['date', 'close_value']]
-            df_train = df_train.set_index('date')
+                df_train = df_train.rename(columns={'ds': 'date'})
+                df_train = df_train.rename(columns={'y': 'close_value'})
+                df_train = df_train[['date', 'close_value']]
+                df_train = df_train.set_index('date')
 
-            df_final = pd.DataFrame(index=pd.date_range(start_date, future_date))
-            df_final = df_final.join(predictions)
-            df_final = df_final.join(df_train)
-            st.header('Closing price forecast - '+stock_symbol)
-            st.line_chart(df_final)
-            with st.expander("How I calculated that?"):
-                st.write(
-                    """ I am utilizing the Prophet model to analyze the past three years of historical data, beginning from yesterday, with the objective of forecasting the closing price for a duration of one year.""")
+                df_final = pd.DataFrame(index=pd.date_range(start_date, future_date))
+                df_final = df_final.join(predictions)
+                df_final = df_final.join(df_train)
+                st.header('Closing price forecast - '+stock_symbol)
+                st.line_chart(df_final)
+                with st.expander("How I calculated that?"):
+                    st.write(
+                        """ I am utilizing the Prophet model to analyze the past three years of historical data, beginning from yesterday, with the objective of forecasting the closing price for a duration of one year.""")
+            else:
+                st.error('Error: The stock symbol provided either does not exist or is not listed in the US market.', icon="🚨")
