@@ -156,7 +156,7 @@ with tab_compare:
 with tab_predict:
     st.header("Closing price predictor with Prophet model")
     st.write("More info about Prophet: https://facebook.github.io/prophet/")
-    st.write("Why is good predict stock value?")
+    st.write("Why should you predict stock value?")
     st.write(
         """Stock value prediction is to forecast the future price or value of a stock, which is influenced by various factors such as company performance, market conditions, and global economic trends. By accurately predicting the future value of a stock, investors can make informed decisions about whether to buy, sell, or hold a particular stock, potentially resulting in significant financial gains.""")
     stock_symbol = st.text_input('Stock Symbol', 'TSLA')
