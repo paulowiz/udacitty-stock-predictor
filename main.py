@@ -12,10 +12,10 @@ import pandas as pd
 
 def get_stock_data_by_symbol(symbol: str):
     url = "https://alpha.financeapi.net/symbol/get-chart?period=MAX&symbol=" + symbol
-
+    token = os.getenv('YAHOO_TOKEN')
     payload = {}
     headers = {
-        'X-API-KEY': 'FXl3Ntu3hA4UehOXR018C5Lbinf5ADsS9s6cQVGt'
+        'X-API-KEY': token
     }
 
     response = requests.request("GET", url, headers=headers, data=payload)
@@ -180,6 +180,6 @@ with tab_predict:
             df_final = df_final.join(df_train)
             st.header('Closing price forecast - '+stock_symbol)
             st.line_chart(df_final)
-            with st.expander("How we calculated that?"):
+            with st.expander("How I calculated that?"):
                 st.write(
-                    """ We are utilizing the Prophet model to analyze the past three years of historical data, beginning from yesterday, with the objective of forecasting the closing price for a duration of one year.""")
+                    """ I am utilizing the Prophet model to analyze the past three years of historical data, beginning from yesterday, with the objective of forecasting the closing price for a duration of one year.""")
