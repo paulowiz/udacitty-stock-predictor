@@ -148,6 +148,7 @@ with tab_predict:
             start_date = today - datetime.timedelta(days=1095)
             end_date = today - datetime.timedelta(days=1)
             predict_days = 365
+            future_date = end_date + datetime.timedelta(days=365)
             df_train = get_data_for_training(stock_symbol, start_date, end_date)
             # Preparing training data
             df_train = df_train[['close']]
@@ -164,5 +165,21 @@ with tab_predict:
             # Make predictions on test data
             future = model.make_future_dataframe(periods=predict_days, freq='D')
             predictions = model.predict(future)
+            predictions = predictions.rename(columns={'ds': 'date'})
+            predictions = predictions.rename(columns={'yhat': 'prediction'})
+            predictions = predictions[['date', 'prediction']]
+            predictions = predictions.set_index('date')
 
-            st.line_chart(predictions[['ds', 'yhat']], x='ds', y='yhat')
+            df_train = df_train.rename(columns={'ds': 'date'})
+            df_train = df_train.rename(columns={'y': 'close_value'})
+            df_train = df_train[['date', 'close_value']]
+            df_train = df_train.set_index('date')
+
+            df_final = pd.DataFrame(index=pd.date_range(start_date, future_date))
+            df_final = df_final.join(predictions)
+            df_final = df_final.join(df_train)
+            st.header('Closing price forecast - '+stock_symbol)
+            st.line_chart(df_final)
+            with st.expander("How we calculated that?"):
+                st.write(
+                    """ We are utilizing the Prophet model to analyze the past three years of historical data, beginning from yesterday, with the objective of forecasting the closing price for a duration of one year.""")
