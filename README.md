@@ -14,7 +14,7 @@
 Closing price predictor with Prophet model
 More info about Prophet: https://facebook.github.io/prophet/
 
-Why is good predict stock value?
+Why should you predict stock value?
 
 Stock value prediction is to forecast the future price or value of a stock, which is influenced by various factors such as company performance, market conditions, and global economic trends. By accurately predicting the future value of a stock, investors can make informed decisions about whether to buy, sell, or hold a particular stock, potentially resulting in significant financial gains..  
   
