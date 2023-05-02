@@ -9,6 +9,17 @@ from prophet import Prophet
 import requests
 import pandas as pd
 
+st.set_page_config(
+    page_title="Capstone Project - Investment and Trading",
+    page_icon="🧊",
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': 'https://www.linkedin.com/in/paulo-mota-955218a2/',
+        'Report a bug': "https://www.linkedin.com/in/paulo-mota-955218a2/",
+        'About': "Compare and predict US stocks!"
+    }
+)
+
 
 def get_stock_data_by_symbol(symbol: str):
     url = "https://alpha.financeapi.net/symbol/get-chart?period=MAX&symbol=" + symbol
@@ -78,9 +89,11 @@ def get_data_for_training(symbol, start_date, end_date):
 
 
 st.title("Capstone Project Data Scientist: Investment and Trading")
-st.markdown("Autor: Paulo Mota [![Linkedin](https://i.stack.imgur.com/gVE0j.png) LinkedIn](https://www.linkedin.com/in/paulo-mota-955218a2/)")
+st.markdown(
+    "Autor: Paulo Mota [![Linkedin](https://i.stack.imgur.com/gVE0j.png) LinkedIn](https://www.linkedin.com/in/paulo-mota-955218a2/)")
 st.markdown("")
-st.info("This software utilizes stock symbols from the USA and retrieves financial data from Yahoo Finance. More info: https://financeapi.net/")
+st.info(
+    "This software utilizes stock symbols from the USA and retrieves financial data from Yahoo Finance. More info: https://financeapi.net/")
 tab_compare, tab_predict = st.tabs(["Compare Stocks", "Predictor"])
 
 with tab_compare:
@@ -186,10 +199,11 @@ with tab_predict:
                 df_final = pd.DataFrame(index=pd.date_range(start_date, future_date))
                 df_final = df_final.join(predictions)
                 df_final = df_final.join(df_train)
-                st.header('Closing price forecast - '+stock_symbol)
+                st.header('Closing price forecast - ' + stock_symbol)
                 st.line_chart(df_final)
                 with st.expander("How I calculated that?"):
                     st.write(
                         """ I am utilizing the Prophet model to analyze the past three years of historical data, beginning from yesterday, with the objective of forecasting the closing price for a duration of one year.""")
             else:
-                st.error('Error: The stock symbol provided either does not exist or is not listed in the US market.', icon="🚨")
+                st.error('Error: The stock symbol provided either does not exist or is not listed in the US market.',
+                         icon="🚨")
