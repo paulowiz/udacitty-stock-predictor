@@ -43,6 +43,17 @@ Stock value prediction is to forecast the future price or value of a stock, whic
   
 <!-- File Overview -->  
   
-## 📝 Project files overview  
+## 📚 Project files overview
   
-- **main.py**  Main file
+- **main.py**  Streamlit web service with all model and functionalities.
+- **requirements.txt**  Dependencies from the project
+- **stock.ipynb**  My laboratory file to try models and evaluate data.
+- **capstone_data_scientist_Stock_Predictor.pdf**  Paper about the project
+- **.gitignore**  Define files that should be ignored by GIT.
+
+## 🔓 License, Author and Acknowledgements
+
+This project lives under MIT License. - [Paulo Mota](https://www.linkedin.com/in/paulo-mota-955218a2/)<br>
+Data Source: [Yahoo Finance API](https://financeapi.net/)<br>
+Model: [Prophet](https://facebook.github.io/prophet/)
+<br />
