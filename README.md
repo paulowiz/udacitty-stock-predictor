@@ -7,7 +7,8 @@
   </h3>   
 </p>  
   
-  
+ try it out here : https://paulowiz-udacity-stock-predictor-main-3gk95u.streamlit.app/
+ 
   
 <!-- ABOUT THE PROJECT -->  
 ## 🤔 Introduction  
